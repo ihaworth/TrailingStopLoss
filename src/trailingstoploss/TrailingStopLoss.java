@@ -1,51 +1,50 @@
 package trailingstoploss;
 
-public class TrailingStopLoss implements TimerListener
+public class TrailingStopLoss
 {
     private final Seller seller;
     private final MyTimer timer;
 
     private int price;
-    private int tempPrice;
 
     public TrailingStopLoss(int initialPrice, Seller seller, MyTimer timer)
     {
         this.price = initialPrice;
         this.seller = seller;
         this.timer = timer;
-        
-        timer.addListener(this);
     }
 
     public void priceChanged(int newPrice)
     {
-        this.tempPrice = newPrice;
+        timer.addListener(new TimeoutListener(newPrice));
         
-        if (priceIncreasing())
+        if (newPrice > price)
             timer.start(15);
-        else if (priceDecreasing())
+        else if (newPrice < price)
             timer.start(30);
     }
 
-    /* (non-Javadoc)
-     * @see trailingstoploss.TimerListener#timeUp()
-     */
-    @Override
-    public void timeUp()
+    private final class TimeoutListener implements TimerListener
     {
-        if (priceDecreasing())
+        private int tempPrice;
+
+        public TimeoutListener(int newPrice)
+        {
+            this.tempPrice = newPrice;
+        }
+
+        @Override
+        public void timeUp()
+        {
+            setNewPrice(tempPrice);
+        }
+    }
+
+    private void setNewPrice(int newPrice)
+    {
+        if (newPrice < price)
             seller.sell();
         else
-            price = tempPrice;
-    }
-
-    private boolean priceDecreasing()
-    {
-        return tempPrice < price;
-    }
-
-    private boolean priceIncreasing()
-    {
-        return tempPrice > price;
+            price = newPrice;
     }
 }
