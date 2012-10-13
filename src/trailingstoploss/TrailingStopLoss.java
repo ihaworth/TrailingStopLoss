@@ -16,19 +16,42 @@ public class TrailingStopLoss
 
     public void priceChanged(int newPrice)
     {
-        timer.addListener(new TimeoutListener(newPrice));
-        
         if (newPrice > price)
-            timer.start(15);
+        {
+            waitForPriceIncreaseToStabilise(newPrice);
+        }
         else if (newPrice < price)
-            timer.start(30);
+        {
+            waitForPriceDecreaseToStabilise();
+        }
     }
 
-    private final class TimeoutListener implements TimerListener
+    private void waitForPriceIncreaseToStabilise(int newPrice)
+    {
+        timer.addListener(new PriceIncreaseTimeout(newPrice));
+        timer.start(15);
+    }
+
+    private void waitForPriceDecreaseToStabilise()
+    {
+        timer.addListener(new PriceDecreaseTimeout());
+        timer.start(30);
+    }
+
+    private final class PriceDecreaseTimeout implements TimerListener
+    {
+        @Override
+        public void timeUp()
+        {
+            seller.sell();
+        }
+    }
+
+    private final class PriceIncreaseTimeout implements TimerListener
     {
         private int tempPrice;
 
-        public TimeoutListener(int newPrice)
+        public PriceIncreaseTimeout(int newPrice)
         {
             this.tempPrice = newPrice;
         }
@@ -36,15 +59,7 @@ public class TrailingStopLoss
         @Override
         public void timeUp()
         {
-            setNewPrice(tempPrice);
+            price = tempPrice;
         }
-    }
-
-    private void setNewPrice(int newPrice)
-    {
-        if (newPrice < price)
-            seller.sell();
-        else
-            price = newPrice;
     }
 }
