@@ -56,6 +56,7 @@ public class TrailingStopLossTest
     public void stockNotSoldWhenPriceIncreases()
     {
         trailingStopLoss.priceChanged(11);
+        timer.timeUp();
         assertFalse(seller.sold());
     }
 
