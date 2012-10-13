@@ -33,13 +33,13 @@ public class TrailingStopLossTest
 
         void fifteenSecondsElapsed()
         {
-            if (duration == 15)
+            if (duration <= 15)
                 timeUp();
         }
 
         void thirtySecondsElapsed()
         {
-            if (duration == 30)
+            if (duration <= 30)
                 timeUp();
         }
     }
@@ -85,6 +85,8 @@ public class TrailingStopLossTest
     {
         trailingStopLoss.priceChanged(9);
         // Don't wait for price to become stable
+        trailingStopLoss.priceChanged(10);
+        timer.thirtySecondsElapsed();
         assertFalse(seller.sold());
     }
 
