@@ -16,6 +16,8 @@ public class TrailingStopLoss
 
     public void priceChanged(int newPrice)
     {
+        timer.stop();
+        
         if (newPrice > price)
         {
             waitForPriceIncreaseToStabilise(newPrice);

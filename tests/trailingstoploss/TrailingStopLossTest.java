@@ -22,13 +22,20 @@ public class TrailingStopLossTest
         @Override
         public void timeUp()
         {
-            timerListener.timeUp();
+            if (timerListener != null)
+                timerListener.timeUp();
         }
 
         @Override
         public void start(int duration)
         {
             this.duration = duration;
+        }
+
+        @Override
+        public void stop()
+        {
+            timerListener = null;
         }
 
         void fifteenSecondsElapsed()
