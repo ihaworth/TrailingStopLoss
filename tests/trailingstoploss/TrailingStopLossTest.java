@@ -10,19 +10,19 @@ public class TrailingStopLossTest
 {
     final class MockTimer implements MyTimer
     {
-        private TrailingStopLoss trailingStopLoss;
+        private TimerListener timerListener;
         private int duration;
         
         @Override
-        public void addListener(TrailingStopLoss trailingStopLoss)
+        public void addListener(TimerListener timerListener)
         {
-            this.trailingStopLoss = trailingStopLoss;
+            this.timerListener = timerListener;
         }
 
         @Override
         public void timeUp()
         {
-            trailingStopLoss.timeUp();
+            timerListener.timeUp();
         }
 
         @Override

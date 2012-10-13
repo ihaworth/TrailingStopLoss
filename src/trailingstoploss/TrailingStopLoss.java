@@ -1,6 +1,6 @@
 package trailingstoploss;
 
-public class TrailingStopLoss
+public class TrailingStopLoss implements TimerListener
 {
     private final Seller seller;
     private final MyTimer timer;
@@ -27,6 +27,10 @@ public class TrailingStopLoss
             timer.start(30);
     }
 
+    /* (non-Javadoc)
+     * @see trailingstoploss.TimerListener#timeUp()
+     */
+    @Override
     public void timeUp()
     {
         if (priceDecreasing())
