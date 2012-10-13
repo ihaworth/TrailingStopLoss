@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class TrailingStopLossTest
 {
-    private final class MockTimer implements MyTimer
+    final class MockTimer implements MyTimer
     {
         private TrailingStopLoss trailingStopLoss;
         private int duration;
@@ -30,11 +30,23 @@ public class TrailingStopLossTest
         {
             this.duration = duration;
         }
+
+        void fifteenSecondsElapsed()
+        {
+            if (duration == 15)
+                timeUp();
+        }
+
+        void thirtySecondsElapsed()
+        {
+            if (duration == 30)
+                timeUp();
+        }
     }
 
     private Seller seller;
     private TrailingStopLoss trailingStopLoss;
-    private MyTimer timer;
+    private MockTimer timer;
 
     @Before
     public void setUp()
@@ -56,7 +68,7 @@ public class TrailingStopLossTest
     public void stockNotSoldWhenPriceIncreasesAndStaysUp()
     {
         trailingStopLoss.priceChanged(11);
-        timer.timeUp();
+        timer.fifteenSecondsElapsed();
         assertFalse(seller.sold());
     }
 
@@ -64,7 +76,7 @@ public class TrailingStopLossTest
     public void stockSoldWhenPriceDecreasesAndStaysDown()
     {
         trailingStopLoss.priceChanged(9);
-        timer.timeUp();
+        timer.thirtySecondsElapsed();
         assertTrue(seller.sold());
     }
 
@@ -82,7 +94,7 @@ public class TrailingStopLossTest
         trailingStopLoss.priceChanged(11);
         // Don't wait for price to become stable
         trailingStopLoss.priceChanged(10);
-        timer.timeUp();
+        timer.thirtySecondsElapsed();
         assertFalse(seller.sold());
     }
 
@@ -90,9 +102,9 @@ public class TrailingStopLossTest
     public void stockSoldWhenPriceDecreasesAfterIncrease()
     {
         trailingStopLoss.priceChanged(11);
-        timer.timeUp();
+        timer.fifteenSecondsElapsed();
         trailingStopLoss.priceChanged(10);
-        timer.timeUp();
+        timer.thirtySecondsElapsed();
         assertTrue(seller.sold());
     }
 
@@ -102,10 +114,10 @@ public class TrailingStopLossTest
         trailingStopLoss.priceChanged(11);
         // Don't wait for price to become stable
         trailingStopLoss.priceChanged(10);
-        timer.timeUp();
+        timer.thirtySecondsElapsed();
 
         trailingStopLoss.priceChanged(9);
-        timer.timeUp();
+        timer.fifteenSecondsElapsed();
         
         assertTrue(seller.sold());
     }
