@@ -20,12 +20,15 @@ public class TrailingStopLoss
     {
         this.tempPrice = newPrice;
         
-        timer.start(15);
+        if (priceIncreasing())
+            timer.start(15);
+        else if (priceDecreasing())
+            timer.start(30);
     }
 
     public void timeUp()
     {
-        if (tempPrice < price)
+        if (priceDecreasing())
         {
             seller.sell();
         }
@@ -33,5 +36,15 @@ public class TrailingStopLoss
         {
             price = tempPrice;
         }
+    }
+
+    private boolean priceDecreasing()
+    {
+        return tempPrice < price;
+    }
+
+    private boolean priceIncreasing()
+    {
+        return tempPrice > price;
     }
 }

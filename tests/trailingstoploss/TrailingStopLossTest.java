@@ -117,7 +117,7 @@ public class TrailingStopLossTest
         timer.thirtySecondsElapsed();
 
         trailingStopLoss.priceChanged(9);
-        timer.fifteenSecondsElapsed();
+        timer.thirtySecondsElapsed();
         
         assertTrue(seller.sold());
     }
