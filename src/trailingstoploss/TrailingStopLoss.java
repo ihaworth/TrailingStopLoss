@@ -2,14 +2,15 @@ package trailingstoploss;
 
 public class TrailingStopLoss
 {
-    private int price;
     private final Seller seller;
     private final MyTimer timer;
+
+    private int price;
     private int tempPrice;
 
-    public TrailingStopLoss(int price, Seller seller, MyTimer timer)
+    public TrailingStopLoss(int initialPrice, Seller seller, MyTimer timer)
     {
-        this.price = price;
+        this.price = initialPrice;
         this.seller = seller;
         this.timer = timer;
         
@@ -29,13 +30,9 @@ public class TrailingStopLoss
     public void timeUp()
     {
         if (priceDecreasing())
-        {
             seller.sell();
-        }
         else
-        {
             price = tempPrice;
-        }
     }
 
     private boolean priceDecreasing()
