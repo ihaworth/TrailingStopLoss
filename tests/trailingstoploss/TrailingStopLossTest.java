@@ -53,7 +53,7 @@ public class TrailingStopLossTest
     }
     
     @Test
-    public void stockNotSoldWhenPriceIncreases()
+    public void stockNotSoldWhenPriceIncreasesAndStaysUp()
     {
         trailingStopLoss.priceChanged(11);
         timer.timeUp();
@@ -72,10 +72,20 @@ public class TrailingStopLossTest
     public void stockNotSoldWhenPriceDecreasesTemporarily()
     {
         trailingStopLoss.priceChanged(9);
-        // Don't wait for 30 seconds to elapse.
+        // Don't wait for price to become stable
         assertFalse(seller.sold());
     }
-    
+
+    @Test
+    public void stockNotSoldWhenPriceIncreasesTemporarily()
+    {
+        trailingStopLoss.priceChanged(11);
+        // Don't wait for price to become stable
+        trailingStopLoss.priceChanged(10);
+        timer.timeUp();
+        assertFalse(seller.sold());
+    }
+
     @Test
     public void stockSoldWhenPriceDecreasesAfterIncrease()
     {
@@ -83,6 +93,20 @@ public class TrailingStopLossTest
         timer.timeUp();
         trailingStopLoss.priceChanged(10);
         timer.timeUp();
+        assertTrue(seller.sold());
+    }
+
+    @Test
+    public void stockSoldWhenPriceDecreasesAfterTemporaryIncrease()
+    {
+        trailingStopLoss.priceChanged(11);
+        // Don't wait for price to become stable
+        trailingStopLoss.priceChanged(10);
+        timer.timeUp();
+
+        trailingStopLoss.priceChanged(9);
+        timer.timeUp();
+        
         assertTrue(seller.sold());
     }
 }
