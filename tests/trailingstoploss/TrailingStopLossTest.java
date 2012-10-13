@@ -11,6 +11,13 @@ public class TrailingStopLossTest
     private final class MockTimer implements MyTimer
     {
         private TrailingStopLoss trailingStopLoss;
+        private int duration;
+        
+        @Override
+        public void addListener(TrailingStopLoss trailingStopLoss)
+        {
+            this.trailingStopLoss = trailingStopLoss;
+        }
 
         @Override
         public void timeUp()
@@ -19,9 +26,9 @@ public class TrailingStopLossTest
         }
 
         @Override
-        public void addListener(TrailingStopLoss trailingStopLoss)
+        public void start(int duration)
         {
-            this.trailingStopLoss = trailingStopLoss;
+            this.duration = duration;
         }
     }
 
@@ -64,6 +71,7 @@ public class TrailingStopLossTest
     public void stockNotSoldWhenPriceDecreasesTemporarily()
     {
         trailingStopLoss.priceChanged(9);
+        // Don't wait for 30 seconds to elapse.
         assertFalse(seller.sold());
     }
     
@@ -71,9 +79,9 @@ public class TrailingStopLossTest
     public void stockSoldWhenPriceDecreasesAfterIncrease()
     {
         trailingStopLoss.priceChanged(11);
+        timer.timeUp();
         trailingStopLoss.priceChanged(10);
+        timer.timeUp();
         assertTrue(seller.sold());
     }
-    
-    
 }
